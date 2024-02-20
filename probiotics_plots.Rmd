@@ -147,7 +147,7 @@ write.csv(ra.new,"C:/Users/ksugino/Desktop/Github_projects/Comparing-probiotic-c
 
 ## Barplot: on vs off label
 
-```{r, echo=T}
+```{r, echo=T, fig.dim = c(15,10)}
 #refactor label info
 l<-list.sort[,-c(1:2)]
 l.n<-colnames(l)
@@ -176,7 +176,7 @@ ggplot(onoffsum.melt, aes(fill=label, y=value, x=id)) +
 
 ## Barplot: on vs off label by product and taxa
 
-```{r, echo=T}
+```{r, echo=T, fig.dim = c(15,10)}
 #order sample number, variables and create colors
 require(pals)
 onoffsum.melt$id <- factor(onoffsum.melt$id,levels=unique(as.character(onoffsum.melt$id)))
@@ -193,7 +193,7 @@ ggplot(onoffsum.melt, aes(fill=variable, y=value, x=label)) +
 
 ## Heatmap summary: on vs off label
 
-```{r, echo=T}
+```{r, echo=T, fig.dim = c(25,10)}
 #heatmap showing present/absent/should be present
 pres.table<-ifelse(ra.sort>0.5,T,F)
 names.table<-gsub("\\.\\.\\..*","",colnames(pres.table))
@@ -230,7 +230,7 @@ ggplot(onoffsum.melt2, aes(y=forcats::fct_rev(variable), x=id, fill=factor(onoff
 
 * Now we want to plot run 2 next to run 1 to compare the two outputs
 
-```{r, echo=T}
+```{r, echo=T, fig.dim = c(15,10)}
 run1<-read.csv("C:/Users/ksugino/Desktop/Github_projects/Comparing-probiotic-compositions-to-their-labels/data/run1/20231214_ra_unmerged_gg2_BLAST_names_table.csv")
 
 #Note: this file was not created here
@@ -303,7 +303,7 @@ for(i in 1:length(id.list)){
 
 ## Barplot: on vs off label
 
-```{r, echo=T}
+```{r, echo=T, fig.dim = c(15,10)}
 ggplot(onoffsum.melt, aes(fill=label, y=value, x=id)) + 
   geom_bar(position="stack",  stat="identity")+
   labs(x ="", y = "% Abundance",fill="Product \nComposition")+
@@ -329,7 +329,7 @@ ggplot(onoffsum.melt, aes(fill=label, y=value, x=id)) +
 
 ## Barplot: on vs off label by product and taxa
 
-```{r, echo=T}
+```{r, echo=T, fig.dim = c(15,10)}
 #order sample number, variables and create colors
 require(pals)
 onoffsum.melt$id <- factor(onoffsum.melt$id,levels=unique(as.character(onoffsum.melt$id)))
@@ -346,7 +346,7 @@ ggplot(onoffsum.melt, aes(fill=variable, y=value, x=label)) +
 
 ## Heatmap summary: on vs off label
 
-```{r, echo=T}
+```{r, echo=T, fig.dim = c(25,10)}
 #heatmap showing present/absent/should be present
 pres.table<-ifelse(ra.sort>0.5,T,F)
 names.table<-gsub("\\.\\.\\..*","",colnames(pres.table))
@@ -390,19 +390,4 @@ ggplot(onoffsum.melt2, aes(y=forcats::fct_rev(variable), x=id, fill=factor(onoff
                geom = "col",
                colour = ifelse(grepl("A|B|C|D",unique(onoffsum.melt$id)),0,1),
                fill = ifelse(grepl("A|B|C|D",unique(onoffsum.melt$id)),NA,NA))
-```
-
-```{r, echo=T}
-
-
-```
-
-```{r, echo=T}
-
-
-```
-
-```{r, echo=T}
-
-
 ```
