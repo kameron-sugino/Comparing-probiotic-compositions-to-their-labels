@@ -1,0 +1,18 @@
+Number,Brand,L. reuteri,L. casei,L. rhamnosus|zeae,S. thermophilus,L. acidophilus,B. breve,B. infantis|longum,L. delbrueckii,S. boulardii,B. lactis|animalis,L. plantarum,B. bifidum,L. salivarius,L. fermentum,L. gasseri,L. paracasei,B. coagulans
+1,Brand 1,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F
+2,Brand 2,F,T,T,T,T,T,T,T,F,F,F,F,F,F,F,F,F
+3,Brand 3,T,F,T,F,F,T,T,F,T,T,T,T,T,F,F,F,F
+4,Brand 4,F,F,T,F,F,F,F,F,F,T,F,F,F,F,F,F,F
+5,Brand 5,F,F,T,F,F,F,F,F,F,T,F,F,F,F,F,F,F
+6,Brand 6,F,F,F,F,F,F,F,F,F,F,F,F,F,T,F,F,F
+7,Brand 7,F,F,F,F,F,F,F,F,F,T,F,F,F,F,F,F,F
+8,Brand 8,F,F,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F
+9,Brand 9,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F
+10,Brand 10,F,F,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F
+11,Brand 11,F,F,T,F,T,F,F,F,F,T,F,F,F,F,F,F,F
+12,Brand 12,T,F,T,F,T,F,T,F,F,T,T,F,F,F,F,F,F
+13,Brand 13,T,F,T,F,F,T,T,F,F,T,T,T,T,F,T,F,F
+14,Brand 14,F,F,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F
+15,Brand 15,F,F,F,F,F,F,F,F,F,T,F,F,F,F,F,F,F
+16,Brand 16,F,F,F,T,T,T,T,T,F,F,T,F,F,F,F,T,F
+17,Brand 17,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,T

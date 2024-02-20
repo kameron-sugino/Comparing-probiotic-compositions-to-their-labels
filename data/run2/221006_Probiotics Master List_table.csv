@@ -1,0 +1,13 @@
+Number,Brand,L. reuteri,L. casei,L. rhamnosus|zeae,S. thermophilus,L. acidophilus,B. breve,B. infantis|longum,L. delbrueckii,S. boulardii,B. lactis|animalis,L. plantarum,B. bifidum,L. salivarius,L. gasseri,B. coagulans
+1,Brand 1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2,Brand 2,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0
+3,Brand 3,1,0,1,0,0,1,1,0,1,1,1,1,1,0,0
+4,Brand 4,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0
+5,Brand 5,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0
+8,Brand 8,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+9,Brand 9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+10,Brand 10,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+12,Brand 12,1,0,1,0,1,0,1,0,0,1,1,0,0,0,0
+13,Brand 13,1,0,1,0,0,1,1,0,0,1,1,1,1,1,0
+14,Brand 14,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+17,Brand 17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1

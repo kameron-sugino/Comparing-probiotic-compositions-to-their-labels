@@ -1,127 +1,53 @@
--   [1 Introduction](#introduction)
-    -   [1.1 Methods: data generation and
-        features](#methods-data-generation-and-features)
--   [2 Data cleanup and formatting](#data-cleanup-and-formatting)
-    -   [2.1 Splitting data by abundance](#splitting-data-by-abundance)
--   [3 Data exploration](#data-exploration)
-    -   [3.1 Barplot: on vs off label](#barplot-on-vs-off-label)
-    -   [3.2 Barplot: on vs off label by product and
-        taxa](#barplot-on-vs-off-label-by-product-and-taxa)
-    -   [3.3 Heatmap summary: on vs off
-        label](#heatmap-summary-on-vs-off-label)
--   [4 Plotting run 1 vs run 2](#plotting-run-1-vs-run-2)
-    -   [4.1 Barplot: on vs off label](#barplot-on-vs-off-label-1)
-    -   [4.2 Barplot: on vs off label by product and
-        taxa](#barplot-on-vs-off-label-by-product-and-taxa-1)
-    -   [4.3 Heatmap summary: on vs off
-        label](#heatmap-summary-on-vs-off-label-1)
+---
+title: "Comparing-probiotic-compositions-to-their-labels"
+author: "Kameron Sugino"
+date: "2024-02-20"
+output:
+  md_document:
+    variant: markdown_github
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+---
 
 Comparing probiotic composition to their label
 
-# 1 Introduction
 
-Since probiotics in USA are available as dietary supplements, they
-bypass the safety, efficacy, and regulatory rigor of the FDA. Thus, the
-responsibility for appropriate quality control and safety standards lies
-exclusively with manufacturers, allowing probiotic products to evade
-regulatory scrutiny. This is some code to take our OTU data, and compare
-it the the labels to evaluate whether bacterial strains advertised on
-commercial infant probiotic supplements are accurate, and to identify if
-any bacterial contaminants are present.
+# Introduction
 
-## 1.1 Methods: data generation and features
+Since probiotics in USA are available as dietary supplements, they bypass the safety, efficacy, and regulatory rigor of the FDA. Thus, the responsibility for appropriate quality control and safety standards lies exclusively with manufacturers, allowing probiotic products to evade regulatory scrutiny. This is some code to take our OTU data, and compare it the the labels to evaluate whether bacterial strains advertised on commercial infant probiotic supplements are accurate, and to identify if any bacterial contaminants are present.
 
--   These sequences were collected by extracting DNA from the probiotic
-    products and amplifying the V3-V4 region of the 16S gene
-    -   There are two sets of data:
-        -   Run 1: 16 probiotic products consisting of a mono-, bi-,
-            tri- and multi-bug products. Samples were run in triplicate,
-            though one sample did not yield any DNA.
-        -   Run 2: The same products as above, but using different lot
-            numbers and fewer of the samples; more of a confirmatory run
--   We are working with the already processed samples. More information
-    in available on how this was done in my [QIIME
-    script](https://github.com/kameron-sugino/Basics-of-16S-sequence-processing-with-QIIME-on-SGE-cluster-servers.git)
-    and additional annotations were made with my [BLAST
-    pipeline](https://github.com/kameron-sugino/BLAST-ing-your-sequence-for-more-specific-taxonomic-IDs.git)
-    -   Briefly, sequences were aligned against greengenes2 and any
-        unclassified sequences were annotated again using BLAST.
--   Let’s get started by reading in our packages
+## Methods: data generation and features
+* These sequences were collected by extracting DNA from the probiotic products and amplifying the V3-V4 region of the 16S gene
+  * There are two sets of data:
+    * Run 1: 16 probiotic products consisting of a mono-, bi-, tri- and multi-bug products. Samples were run in triplicate, though one sample did not yield any DNA.
+    * Run 2: The same products as above, but using different lot numbers and fewer of the samples; more of a confirmatory run
 
-``` r
+* We are working with the already processed samples. More information in available on how this was done in my [QIIME script](https://github.com/kameron-sugino/Basics-of-16S-sequence-processing-with-QIIME-on-SGE-cluster-servers.git) and additional annotations were made with my [BLAST pipeline](https://github.com/kameron-sugino/BLAST-ing-your-sequence-for-more-specific-taxonomic-IDs.git)
+  * Briefly, sequences were aligned against greengenes2 and any unclassified sequences were annotated again using BLAST.
+  
+* Let's get started by reading in our packages
+
+```{r, echo=T}
 require(ggplot2)
-```
-
-    ## Loading required package: ggplot2
-
-``` r
 require(reshape2)
-```
-
-    ## Loading required package: reshape2
-
-``` r
 require(colorspace)
-```
-
-    ## Loading required package: colorspace
-
-    ## Warning: package 'colorspace' was built under R version 4.1.3
-
-``` r
 require(vegan)
-```
-
-    ## Loading required package: vegan
-
-    ## Warning: package 'vegan' was built under R version 4.1.3
-
-    ## Loading required package: permute
-
-    ## Warning: package 'permute' was built under R version 4.1.3
-
-    ## Loading required package: lattice
-
-    ## Warning: package 'lattice' was built under R version 4.1.3
-
-    ## This is vegan 2.6-4
-
-``` r
 require(dplyr)
 ```
 
-    ## Loading required package: dplyr
+# Data cleanup and formatting
+* There are a few things we need to clean up in both run 1 and run 2. Here are the features altered for run 1 below:
+  * Renamed sample 5A to 3A (mislabeled)
+  * Average triplicate runs together for downstream analyses
+  * Aggregate the reannotated taxa so there are no duplicate taxa names
+  * Since we're using 16S data, we will have uncertainty surrounding closely related species. So we're combining the following taxa into one group:
+    * L.helveticus/L.acidophilus
+    * L.vaginalis/L.reuteri
+    * B.animalis/B.lactis
+    * B.longum/B.infantis
 
-    ## Warning: package 'dplyr' was built under R version 4.1.3
-
-    ## 
-    ## Attaching package: 'dplyr'
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
-# 2 Data cleanup and formatting
-
--   There are a few things we need to clean up in both run 1 and run 2.
-    Here are the features altered for run 1 below:
-    -   Renamed sample 5A to 3A (mislabeled)
-    -   Average triplicate runs together for downstream analyses
-    -   Aggregate the reannotated taxa so there are no duplicate taxa
-        names
-    -   Since we’re using 16S data, we will have uncertainty surrounding
-        closely related species. So we’re combining the following taxa
-        into one group:
-        -   L.helveticus/L.acidophilus
-        -   L.vaginalis/L.reuteri
-        -   B.animalis/B.lactis
-        -   B.longum/B.infantis
-
-``` r
+```{r, echo=T}
 #need to format run 1 so that the runs arent averaged together
 #read in data, rename 5A as 3A
 tax<-read.table("C:/Users/ksugino/Desktop/Github_projects/Comparing-probiotic-compositions-to-their-labels/data/run1/taxonomy.tsv",sep="\t",header=T)
@@ -196,13 +122,12 @@ list.sort<-df.m.list[,c(1:ncol(df.prob.list))]
 ra.sort.agg<-aggregate(ra.sort, list(list.sort$Brand),mean)
 ```
 
-## 2.1 Splitting data by abundance
+## Splitting data by abundance
 
--   Since we’re only interested in taxa that are on the product label,
-    and since we expect those taxa to have the highest abundance, we can
-    sum the lower abundance taxa into an “other” category to save space
+* Since we're only interested in taxa that are on the product label, and since we expect those taxa to have the highest abundance, we can sum the lower abundance taxa into an "other" category to save space
 
-``` r
+```{r, echo=T}
+
 top.ra<-ra.sort[,apply(ra.sort, 2, function(x) max(x, na.rm = TRUE))>=0.5]
 bot.ra<-ra.sort[,apply(ra.sort, 2, function(x) max(x, na.rm = TRUE))<0.5]
 
@@ -213,18 +138,16 @@ ra.new<-data.frame(list.sort[,c(1:2)],ra.new)
 write.csv(ra.new,"C:/Users/ksugino/Desktop/Github_projects/Comparing-probiotic-compositions-to-their-labels/data/run1/20231214_ra_unmerged_gg2_BLAST_names_table.csv",row.names = F)
 ```
 
-# 3 Data exploration
+# Data exploration
 
--   Let’s start looking at the data now. We’ll generate the following
-    plots:
-    -   barplot of on vs off label
-    -   faceted plot of taxa on the label ve taxa off the label for each
-        product
-    -   heatmap summary
+* Let's start looking at the data now. We'll generate the following plots:
+  * barplot of on vs off label
+  * faceted plot of taxa on the label ve taxa off the label for each product
+  * heatmap summary
 
-## 3.1 Barplot: on vs off label
+## Barplot: on vs off label
 
-``` r
+```{r, echo=T}
 #refactor label info
 l<-list.sort[,-c(1:2)]
 l.n<-colnames(l)
@@ -251,18 +174,11 @@ ggplot(onoffsum.melt, aes(fill=label, y=value, x=id)) +
   facet_grid(. ~ factor(gsub("A|B|C|D","",id),levels=c("No 1","No 2","No 3","No 4","No 5","No 6","No 7","No 8","No 9","No 10","No 11","No 12","No 14","No 15","No 16","No 17")), drop=TRUE,scale="free",space="free_x")
 ```
 
-![](probiotics_plots_files/figure-markdown_github/unnamed-chunk-4-1.png)
+## Barplot: on vs off label by product and taxa
 
-## 3.2 Barplot: on vs off label by product and taxa
-
-``` r
+```{r, echo=T}
 #order sample number, variables and create colors
 require(pals)
-```
-
-    ## Loading required package: pals
-
-``` r
 onoffsum.melt$id <- factor(onoffsum.melt$id,levels=unique(as.character(onoffsum.melt$id)))
 onoffsum.melt$variable <- factor(onoffsum.melt$variable,levels = unique(as.character(onoffsum.melt$variable)))
 onoffsum.melt$col<-onoffsum.melt$variable
@@ -275,11 +191,9 @@ ggplot(onoffsum.melt, aes(fill=variable, y=value, x=label)) +
   labs(x ="", y = "% Abundance",fill="Product \nComposition")
 ```
 
-![](probiotics_plots_files/figure-markdown_github/unnamed-chunk-5-1.png)
+## Heatmap summary: on vs off label
 
-## 3.3 Heatmap summary: on vs off label
-
-``` r
+```{r, echo=T}
 #heatmap showing present/absent/should be present
 pres.table<-ifelse(ra.sort>0.5,T,F)
 names.table<-gsub("\\.\\.\\..*","",colnames(pres.table))
@@ -312,13 +226,11 @@ ggplot(onoffsum.melt2, aes(y=forcats::fct_rev(variable), x=id, fill=factor(onoff
   facet_grid(. ~ factor(gsub("A|B|C|D","",id),levels=c("No 1","No 2","No 3","No 4","No 5","No 6","No 7","No 8","No 9","No 10","No 11","No 12","No 14","No 15","No 16","No 17")), drop=TRUE,scale="free",space="free_x")
 ```
 
-![](probiotics_plots_files/figure-markdown_github/unnamed-chunk-6-1.png)
+# Plotting run 1 vs run 2
 
-# 4 Plotting run 1 vs run 2
+* Now we want to plot run 2 next to run 1 to compare the two outputs
 
--   Now we want to plot run 2 next to run 1 to compare the two outputs
-
-``` r
+```{r, echo=T}
 run1<-read.csv("C:/Users/ksugino/Desktop/Github_projects/Comparing-probiotic-compositions-to-their-labels/data/run1/20231214_ra_unmerged_gg2_BLAST_names_table.csv")
 
 #Note: this file was not created here
@@ -389,9 +301,9 @@ for(i in 1:length(id.list)){
 }
 ```
 
-## 4.1 Barplot: on vs off label
+## Barplot: on vs off label
 
-``` r
+```{r, echo=T}
 ggplot(onoffsum.melt, aes(fill=label, y=value, x=id)) + 
   geom_bar(position="stack",  stat="identity")+
   labs(x ="", y = "% Abundance",fill="Product \nComposition")+
@@ -409,26 +321,15 @@ ggplot(onoffsum.melt, aes(fill=label, y=value, x=id)) +
                geom = "col",
                colour = ifelse(grepl("A|B|C|D",unique(onoffsum.melt$id)),0,1),
                fill = ifelse(grepl("A|B|C|D",unique(onoffsum.melt$id)),NA,NA))
-```
-
-    ## Warning: The `fun.y` argument of `stat_summary()` is deprecated as of ggplot2 3.3.0.
-    ## i Please use the `fun` argument instead.
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
-
-![](probiotics_plots_files/figure-markdown_github/unnamed-chunk-8-1.png)
-
-``` r
   # cant get the boxes to outline or insert a shape parameter because I'm not calling the data in an aes statement correctly
   # geom_segment(aes(xend = id, yend = ifelse(grepl("A|B|C|D",id),0,1),linetype=ifelse(grepl("A|B|C|D",id),"Run 1","Run 2")),linewidth=NA, colour = ifelse(grepl("A|B|C|D",onoffsum.melt$id),0,1))+
   # 
   # scale_linetype_manual(values = c(1,2), name = "Sequencing \nRun")
 ```
 
-## 4.2 Barplot: on vs off label by product and taxa
+## Barplot: on vs off label by product and taxa
 
-``` r
+```{r, echo=T}
 #order sample number, variables and create colors
 require(pals)
 onoffsum.melt$id <- factor(onoffsum.melt$id,levels=unique(as.character(onoffsum.melt$id)))
@@ -443,11 +344,9 @@ ggplot(onoffsum.melt, aes(fill=variable, y=value, x=label)) +
   labs(x ="", y = "% Abundance",fill="Product \nComposition")
 ```
 
-![](probiotics_plots_files/figure-markdown_github/unnamed-chunk-9-1.png)
+## Heatmap summary: on vs off label
 
-## 4.3 Heatmap summary: on vs off label
-
-``` r
+```{r, echo=T}
 #heatmap showing present/absent/should be present
 pres.table<-ifelse(ra.sort>0.5,T,F)
 names.table<-gsub("\\.\\.\\..*","",colnames(pres.table))
@@ -493,4 +392,17 @@ ggplot(onoffsum.melt2, aes(y=forcats::fct_rev(variable), x=id, fill=factor(onoff
                fill = ifelse(grepl("A|B|C|D",unique(onoffsum.melt$id)),NA,NA))
 ```
 
-![](probiotics_plots_files/figure-markdown_github/unnamed-chunk-10-1.png)
+```{r, echo=T}
+
+
+```
+
+```{r, echo=T}
+
+
+```
+
+```{r, echo=T}
+
+
+```
